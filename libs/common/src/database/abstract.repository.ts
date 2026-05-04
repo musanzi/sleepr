@@ -1,5 +1,5 @@
 import { BadRequestException, Logger, NotFoundException } from '@nestjs/common';
-import { DeepPartial, Repository } from 'typeorm';
+import { DeepPartial, FindOptionsWhere, Repository } from 'typeorm';
 import { AbstractEntity } from './abstract.entity';
 
 export abstract class AbstractRepository<TEntity extends AbstractEntity> {
@@ -17,10 +17,14 @@ export abstract class AbstractRepository<TEntity extends AbstractEntity> {
     }
   }
 
+  async findAll(): Promise<TEntity[]> {
+    return await this.entityRepository.find();
+  }
+
   async findOne(id: string): Promise<TEntity> {
     try {
       return await this.entityRepository.findOneOrFail({
-        where: { id } as never,
+        where: { id } as FindOptionsWhere<TEntity>,
       });
     } catch (error) {
       this.logger.error(error);

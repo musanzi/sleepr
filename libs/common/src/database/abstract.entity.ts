@@ -5,8 +5,8 @@ export abstract class AbstractEntity {
   id!: string;
 
   @CreateDateColumn()
-  createdAt!: Date;
+  createDate!: Date;
 
   @CreateDateColumn()
-  updatedAt!: Date;
+  updateDate!: Date;
 }
