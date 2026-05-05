@@ -9,8 +9,6 @@ services:
       - sleepr-db
     ports:
       - 3000:3000
-    volumes:
-      - .:/usr/src/app
   sleepr-db:
     image: mariadb:12.2
     container_name: sleepr-db
@@ -22,5 +20,13 @@ services:
       MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     volumes:
       - mariadb_data:/var/lib/mysql
+  adminer:
+    image: adminer:latest
+    container_name: sleepr-adminer
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
+    depends_on:
+      - sleepr-db
 volumes:
   mariadb_data:
