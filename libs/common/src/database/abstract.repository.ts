@@ -24,7 +24,7 @@ export abstract class AbstractRepository<TEntity extends AbstractEntity> {
   async findOne(id: string): Promise<TEntity> {
     try {
       return await this.entityRepository.findOneOrFail({
-        where: { id } as FindOptionsWhere<TEntity>,
+        where: { id } as FindOptionsWhere<TEntity>
       });
     } catch (error) {
       this.logger.error(error);
