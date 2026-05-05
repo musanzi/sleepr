@@ -10,7 +10,7 @@ export class ReservationsRepository extends AbstractRepository<Reservation> {
 
   constructor(
     @InjectRepository(Reservation)
-    reservationEntity: Repository<Reservation>,
+    reservationEntity: Repository<Reservation>
   ) {
     super(reservationEntity);
   }
