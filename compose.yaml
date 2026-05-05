@@ -1,0 +1,26 @@
+services:
+  reservations:
+    build:
+      context: .
+      dockerfile: ./apps/reservations/Dockerfile
+      target: dev
+    command: pnpm run start:dev reservations
+    depends_on:
+      - sleepr-db
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/usr/src/app
+  sleepr-db:
+    image: mariadb:12.2
+    container_name: sleepr-db
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USERNAME}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - mariadb_data:/var/lib/mysql
+volumes:
+  mariadb_data:
