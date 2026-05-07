@@ -6,7 +6,7 @@ services:
       target: dev
     command: pnpm run start:dev reservations
     depends_on:
-      - auth
+      - sleepr-db
     ports:
       - 3000:3000
   auth:
