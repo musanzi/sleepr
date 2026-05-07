@@ -1,31 +1,24 @@
-FROM node:alpine AS dev
-
+FROM node:alpine AS base
 WORKDIR /usr/src/app
-
 COPY package.json ./
 COPY pnpm-lock.yaml ./
-
+COPY pnpm-workspace.yaml ./
 RUN npm i -g pnpm
-RUN pnpm i
 
+FROM base AS dev
+RUN pnpm i
 COPY . .
-RUN pnpm build
+CMD ["pnpm", "run", "start:dev", "auth"]
+
+FROM base AS build
+RUN pnpm i --prod
+COPY . .
+RUN pnpm run build auth
+
 
 FROM node:alpine AS prod
-
-ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
-
+ENV NODE_ENV=${STAGE}
 WORKDIR /usr/src/app
+COPY --from=build /usr/src/app/dist ./dist
 
-COPY package.json ./
-COPY pnpm-lock.yaml ./
-
-RUN npm i -g pnpm
-RUN pnpm i --prod
-
-COPY --from=dev /usr/src/app/dist ./dist
-
-
-CMD [ "node" "dist/apps/auth/main"]
-
+CMD ["pnpm", "run", "start:prod", "auth"]
