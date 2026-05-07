@@ -7,13 +7,13 @@ COPY pnpm-lock.yaml ./
 FROM base AS dev
 RUN pnpm i
 COPY . .
-CMD ["pnpm", "run", "start:dev", "reservations"]
+CMD ["pnpm", "start:dev", "reservations"]
 
 FROM base AS build
-RUN pnpm i --prod
+RUN pnpm i
 COPY . .
-RUN pnpm run build reservations
-
+RUN pnpm build reservations
+RUN pnpm prune --prod
 
 FROM node:22-alpine AS prod
 ARG NODE_ENV=production
