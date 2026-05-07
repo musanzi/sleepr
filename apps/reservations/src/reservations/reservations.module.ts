@@ -4,17 +4,9 @@ import { ReservationsController } from './reservations.controller';
 import { ReservationsRepository } from './reservations.repository';
 import { DatabaseModule, LoggerModule } from '@app/common';
 import { Reservation } from './entities/reservation.entity';
-import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({
-      isGlobal: true
-    }),
-    LoggerModule,
-    DatabaseModule,
-    DatabaseModule.forFeature([Reservation])
-  ],
+  imports: [LoggerModule, DatabaseModule, DatabaseModule.forFeature([Reservation])],
   controllers: [ReservationsController],
   providers: [ReservationsService, ReservationsRepository]
 })
