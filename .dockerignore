@@ -2,7 +2,6 @@ node_modules
 dist
 .git
 .env
-Dockerfile
+coverage
 npm-debug.log
 pnpm-debug.log
-coverage

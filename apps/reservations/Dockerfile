@@ -1,9 +1,8 @@
-FROM node:alpine AS base
+FROM node:22-alpine AS base
+RUN npm i -g pnpm
 WORKDIR /usr/src/app
 COPY package.json ./
 COPY pnpm-lock.yaml ./
-COPY pnpm-workspace.yaml ./
-RUN npm i -g pnpm
 
 FROM base AS dev
 RUN pnpm i
@@ -16,9 +15,10 @@ COPY . .
 RUN pnpm run build reservations
 
 
-FROM node:alpine AS prod
-ENV NODE_ENV=${STAGE}
+FROM node:22-alpine AS prod
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
 WORKDIR /usr/src/app
 COPY --from=build /usr/src/app/dist ./dist
-
-CMD ["pnpm", "run", "start:prod", "reservations"]
+COPY --from=build /usr/src/app/node_modules ./node_modules
+CMD ["node", "dist/apps/reservations/main"]
