@@ -10,10 +10,6 @@ export class LocalStragtey extends PassportStrategy(Strategy) {
   }
 
   async validate(email: string, password: string) {
-    try {
-      return await this.authService.validateCredentials(email, password);
-    } catch (error) {
-      throw new BadRequestException(error);
-    }
+    return await this.authService.validateCredentials(email, password);
   }
 }

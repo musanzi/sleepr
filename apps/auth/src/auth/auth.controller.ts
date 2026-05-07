@@ -1,14 +1,14 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import type { JwtRequestUser } from './interfaces/auth.interfaces';
-import { LocalStragtey } from './strategies/local.strategy';
-import { AccessTokenGuard } from './guards/access-token.guard';
+import { LocalAuthGuard } from './guards/local-auth.guard';
+import { User } from '../users/entities/user.entity';
+import type { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -22,10 +22,11 @@ export class AuthController {
     return this.authService.register(dto);
   }
 
+  @UseGuards(LocalAuthGuard)
   @Post('login')
-  @UseGuards(LocalStragtey)
-  login(@Body() dto: LoginDto) {
-    return this.authService.login(dto);
+  login(@CurrentUser() user: User, @Res({ passthrough: true }) res: Response): void {
+    this.authService.login(user, res);
+    res.send(user);
   }
 
   @Post('forgot-password')
@@ -39,7 +40,6 @@ export class AuthController {
   }
 
   @Get('me')
-  @UseGuards(AccessTokenGuard)
   async me(@CurrentUser() user: JwtRequestUser) {
     return await this.usersService.findOne(user.sub);
   }

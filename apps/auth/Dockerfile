@@ -1,8 +1,7 @@
 FROM node:22-alpine AS base
-RUN npm i -g pnpm
+RUN corepack enable && corepack prepare pnpm@11.0.8 --activate
 WORKDIR /usr/src/app
-COPY package.json ./
-COPY pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 FROM base AS dev
 RUN pnpm i

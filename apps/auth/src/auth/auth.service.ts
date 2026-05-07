@@ -5,15 +5,16 @@ import { createHash, randomBytes } from 'crypto';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { AuthResponse } from './interfaces/auth.interfaces';
+import { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
+    private readonly configService: ConfigService,
     private readonly jwtService: JwtService
   ) {}
 
@@ -25,11 +26,13 @@ export class AuthService {
     return await this.usersService.create(dto);
   }
 
-  async login(dto: LoginDto): Promise<AuthResponse | undefined> {
-    const user = await this.usersService.findByEmail(dto.email);
-    if (!user) return;
-    const token = await this.generateToken(user);
-    return { user, token };
+  async login(user: User, res: Response) {
+    const token = this.generateToken(user);
+    const expiresIn = this.configService.get('JWT_SECRET_EXPIRES_IN');
+    res.cookie('Authentication', token, {
+      httpOnly: true,
+      expires: expiresIn
+    });
   }
 
   async forgotPassword(dto: ForgotPasswordDto): Promise<{ message: string; resetToken?: string }> {
