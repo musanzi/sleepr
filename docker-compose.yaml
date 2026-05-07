@@ -5,9 +5,8 @@ services:
       dockerfile: ./apps/reservations/Dockerfile
       target: dev
     command: pnpm run start:dev reservations
-    env_file: ./apps/reservations/.env
-    # depends_on:
-    #   - sleepr-db
+    depends_on:
+      - auth
     ports:
       - 3000:3000
   auth:
@@ -16,12 +15,10 @@ services:
       dockerfile: ./apps/auth/Dockerfile
       target: dev
     command: pnpm run start:dev auth
-    env_file: ./apps/auth/.env
     depends_on:
       - sleepr-db
     ports:
       - 3001:3001
-
   sleepr-db:
     image: mariadb:12.2
     restart: unless-stopped
