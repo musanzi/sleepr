@@ -45,10 +45,6 @@ export class UsersService {
     return this.usersRepository.update(id, dto);
   }
 
-  async getProfile(id: string) {
-    return await this.findOne(id);
-  }
-
   async updateProfile(id: string, dto: UpdateUserDto) {
     return await this.update(id, dto);
   }
