@@ -25,6 +25,7 @@ export class AuthController {
   @Post('login')
   @UseGuards(LocalStragtey)
   login(@Body() dto: LoginDto) {
+    console.log('okeyy');
     return this.authService.login(dto);
   }
 
