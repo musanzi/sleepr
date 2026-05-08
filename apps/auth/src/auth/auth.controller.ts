@@ -5,10 +5,10 @@ import { CurrentUser } from './decorators/current-user.decorator';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import type { JwtRequestUser } from './interfaces/auth.interfaces';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { User } from '../users/entities/user.entity';
 import type { Response } from 'express';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -24,9 +24,8 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  login(@CurrentUser() user: User, @Res({ passthrough: true }) res: Response): void {
-    this.authService.login(user, res);
-    res.send(user);
+  login(@CurrentUser() user: User, @Res({ passthrough: true }) res: Response): Promise<void> {
+    return this.authService.login(user, res);
   }
 
   @Post('forgot-password')
@@ -40,7 +39,8 @@ export class AuthController {
   }
 
   @Get('me')
-  async me(@CurrentUser() user: JwtRequestUser) {
-    return await this.usersService.findOne(user.sub);
+  @UseGuards(JwtAuthGuard)
+  async me(@CurrentUser() user: User) {
+    return await this.usersService.findOne(user.id);
   }
 }

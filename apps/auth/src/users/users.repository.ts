@@ -6,7 +6,7 @@ import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersRepository extends AbstractRepository<User> {
-  protected readonly logger!: Logger;
+  protected readonly logger = new Logger(UsersRepository.name);
 
   constructor(
     @InjectRepository(User)
@@ -30,14 +30,14 @@ export class UsersRepository extends AbstractRepository<User> {
   findByPasswordResetToken(passwordResetToken: string): Promise<User | null> {
     return this.entityRepository.findOne({
       where: { passwordResetToken },
-      select: ['email', 'password', 'passwordResetToken', 'passwordResetExpiresAt']
+      select: ['name', 'email', 'password', 'passwordResetToken', 'passwordResetExpiresAt']
     });
   }
 
   async findOneWithPassword(email: string): Promise<User | null> {
     return await this.entityRepository.findOne({
       where: { email },
-      select: ['email', 'password', 'passwordResetToken', 'passwordResetExpiresAt']
+      select: ['name', 'email', 'password', 'passwordResetToken', 'passwordResetExpiresAt']
     });
   }
 }

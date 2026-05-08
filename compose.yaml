@@ -5,10 +5,12 @@ services:
       dockerfile: ./apps/reservations/Dockerfile
       target: ${STAGE}
     depends_on:
-      sleepr-db:
-        condition: service_healthy
+      - auth
     env_file:
       - .env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
     ports:
       - 3000:3000
   auth:
@@ -21,6 +23,9 @@ services:
         condition: service_healthy
     env_file:
       - .env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
     ports:
       - 3001:3001
   sleepr-db:
@@ -33,10 +38,9 @@ services:
       MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     healthcheck:
       test: ['CMD', 'healthcheck.sh', '--connect', '--innodb_initialized']
-      interval: 5s
+      interval: 10s
       timeout: 5s
-      retries: 10
-      start_period: 20s
+      retries: 5
     volumes:
       - mariadb_data:/var/lib/mysql
   adminer:

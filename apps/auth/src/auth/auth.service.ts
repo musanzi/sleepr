@@ -1,6 +1,6 @@
 import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { createHash, randomBytes } from 'crypto';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
@@ -9,6 +9,7 @@ import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
+import { TokenPaylod } from './interfaces/auth.interfaces';
 
 @Injectable()
 export class AuthService {
@@ -27,12 +28,12 @@ export class AuthService {
   }
 
   async login(user: User, res: Response) {
-    const token = this.generateToken(user);
-    const expiresIn = this.configService.get('JWT_SECRET_EXPIRES_IN');
-    res.cookie('Authentication', token, {
-      httpOnly: true,
-      expires: expiresIn
-    });
+    const token = await this.generateToken(user);
+    const expiresIn = Number(this.configService.getOrThrow('COOKIE_EXPIRES_IN'));
+    const expires = new Date();
+    expires.setSeconds(expires.getSeconds() + expiresIn);
+    res.cookie('Authentication', token, { httpOnly: true, expires });
+    res.send(user);
   }
 
   async forgotPassword(dto: ForgotPasswordDto): Promise<{ message: string; resetToken?: string }> {
@@ -67,13 +68,12 @@ export class AuthService {
     if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new UnauthorizedException('Invalid email or password');
     }
-    return user;
+    return await this.usersService.findOne(user.id);
   }
 
   private async generateToken(user: User): Promise<string> {
-    const payload = { sub: user.id, email: user.email };
-    const accessToken = this.jwtService.signAsync(payload);
-    return accessToken;
+    const payload: TokenPaylod = { sub: user.id, email: user.email };
+    return this.jwtService.signAsync(payload);
   }
 
   private hashResetToken(token: string): string {

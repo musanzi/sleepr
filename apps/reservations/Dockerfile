@@ -14,6 +14,7 @@ COPY . .
 RUN pnpm build reservations
 RUN pnpm prune --prod
 
+
 FROM node:22-alpine AS prod
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}

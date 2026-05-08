@@ -6,7 +6,7 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class ReservationsRepository extends AbstractRepository<Reservation> {
-  protected readonly logger!: Logger;
+  protected readonly logger = new Logger(ReservationsRepository.name);
 
   constructor(
     @InjectRepository(Reservation)
