@@ -4,8 +4,10 @@ services:
       context: .
       dockerfile: ./apps/reservations/Dockerfile
       target: ${STAGE}
+    command: pnpm start:dev reservations
     depends_on:
-      - auth
+      sleepr-db:
+        condition: service_healthy
     env_file:
       - .env
     volumes:
@@ -13,11 +15,28 @@ services:
       - /usr/src/app/node_modules
     ports:
       - 3000:3000
+  payments:
+    build:
+      context: .
+      dockerfile: ./apps/payments/Dockerfile
+      target: ${STAGE}
+    command: pnpm start:dev payments
+    depends_on:
+      sleepr-db:
+        condition: service_healthy
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 3003:3003
   auth:
     build:
       context: .
       dockerfile: ./apps/auth/Dockerfile
       target: ${STAGE}
+    command: pnpm start:dev auth
     depends_on:
       sleepr-db:
         condition: service_healthy

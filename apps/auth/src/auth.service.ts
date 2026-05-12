@@ -2,14 +2,14 @@ import { BadRequestException, ConflictException, Injectable, UnauthorizedExcepti
 import { JwtService } from '@nestjs/jwt';
 import bcrypt from 'bcryptjs';
 import { createHash, randomBytes } from 'crypto';
-import { User } from '../users/entities/user.entity';
-import { UsersService } from '../users/users.service';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { TokenPaylod } from './interfaces/auth.interfaces';
+import { User } from './users/entities/user.entity';
+import { UsersService } from './users/users.service';
 
 @Injectable()
 export class AuthService {

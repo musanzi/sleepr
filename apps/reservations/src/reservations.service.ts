@@ -8,8 +8,8 @@ import { Reservation } from './entities/reservation.entity';
 export class ReservationsService {
   constructor(private readonly reservationRepository: ReservationsRepository) {}
 
-  create(dto: CreateReservationDto): Promise<Reservation> {
-    return this.reservationRepository.create(dto);
+  create(dto: CreateReservationDto, userId: string): Promise<Reservation> {
+    return this.reservationRepository.create({ ...dto, userId });
   }
 
   findAll(): Promise<Reservation[]> {

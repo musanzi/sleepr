@@ -1,14 +1,17 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { Logger } from 'nestjs-pino';
 import cookieParser from 'cookie-parser';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './auth.module';
 import { Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
   const app = await NestFactory.create(AuthModule);
   app.connectMicroservice({
-    transport: Transport.TCP
+    transport: Transport.TCP,
+    options: {
+      host: '0.0.0.0',
+      port: process.env.TCP_PORT
+    }
   });
   app.use(cookieParser());
   app.useGlobalPipes(
@@ -16,10 +19,8 @@ async function bootstrap() {
       transform: true
     })
   );
-  app.useLogger(app.get(Logger));
-  const port = process.env.AUTH_PORT ?? 3000;
   app.startAllMicroservices();
-  await app.listen(port);
+  await app.listen(process.env.AUTH_PORT ?? 3000);
 }
 
 bootstrap().catch((error) => {

@@ -6,11 +6,11 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 FROM base AS dev
 RUN pnpm i
 COPY . .
-RUN pnpm build reservations
+RUN pnpm build payments
 
 FROM node:22-alpine AS prod
 ENV NODE_ENV=production
 WORKDIR /usr/src/app
 COPY --from=dev /usr/src/app/dist ./dist
 COPY --from=dev /usr/src/app/node_modules ./node_modules
-CMD ["node", "dist/apps/reservations/main"]
+CMD ["node", "dist/apps/payments/main"]

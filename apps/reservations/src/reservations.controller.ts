@@ -1,16 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { ReservationsService } from './reservations.service';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { Reservation } from './entities/reservation.entity';
+import { CurrentUser, type userDto } from '@app/common';
 
 @Controller('reservations')
 export class ReservationsController {
   constructor(private readonly reservationsService: ReservationsService) {}
 
   @Post()
-  create(@Body() dto: CreateReservationDto): Promise<Reservation> {
-    return this.reservationsService.create(dto);
+  create(@Body() dto: CreateReservationDto, @CurrentUser() user: userDto): Promise<Reservation> {
+    return this.reservationsService.create(dto, user.id);
   }
 
   @Get()

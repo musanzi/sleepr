@@ -1,14 +1,15 @@
 import { Body, Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { UsersService } from '../users/users.service';
-import { CurrentUser } from './decorators/current-user.decorator';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
-import { User } from '../users/entities/user.entity';
 import type { Response } from 'express';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { MessagePattern, Payload } from '@nestjs/microservices';
+import { CurrentUser } from '@app/common';
+import { User } from './users/entities/user.entity';
+import { UsersService } from './users/users.service';
 
 @Controller('auth')
 export class AuthController {
@@ -36,6 +37,12 @@ export class AuthController {
   @Post('reset-password')
   resetPassword(@Body() dto: ResetPasswordDto) {
     return this.authService.resetPassword(dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @MessagePattern('authenticate')
+  async authenticate(@Payload() data: unknown) {
+    return data?.['user'];
   }
 
   @Get('me')
